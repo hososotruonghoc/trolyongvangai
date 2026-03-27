@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚡ Ai Nhanh Hơn – Toán Lớp 5</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Quicksand:wght@400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0f0c29;
+  --card: #1a1545;
+  --accent1: #ff6b6b;
+  --accent2: #4ecdc4;
+  --accent3: #ffe66d;
+  --accent4: #a855f7;
+  --text: #ffffff;
+  --correct: #22c55e;
+  --wrong: #ef4444;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(135deg, var(--bg) 0%, #302b63 50%, #24243e 100%);
+  min-height: 100vh;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+.stars {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+}
+.star {
+  position: absolute; background: white; border-radius: 50%;
+  animation: twinkle var(--d) ease-in-out infinite alternate;
+}
+@keyframes twinkle { from { opacity: 0.2; } to { opacity: 1; } }
+
+.container {
+  position: relative; z-index: 1;
+  max-width: 900px; margin: 0 auto; padding: 20px;
+  min-height: 100vh; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+h1 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2.8em; text-align: center;
+  background: linear-gradient(135deg, var(--accent3), var(--accent1), var(--accent4));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: none; margin-bottom: 10px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+.subtitle {
+  text-align: center; font-size: 1.1em; color: #a0a0cc;
+  margin-bottom: 30px;
+}
+
+/* ===== SETUP SCREEN ===== */
+.setup-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 24px; padding: 35px;
+  width: 100%; max-width: 600px;
+  animation: slideUp 0.6s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.setup-card label {
+  display: block; font-weight: 700; font-size: 1.1em;
+  margin: 18px 0 8px; color: var(--accent3);
+}
+
+.setup-card select, .setup-card input {
+  width: 100%; padding: 14px 18px; border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08); color: white;
+  font-size: 1.05em; font-family: 'Quicksand', sans-serif;
+  outline: none; transition: 0.3s;
+}
+.setup-card select:focus, .setup-card input:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 20px rgba(78,205,196,0.3);
+}
+.setup-card select option { background: #1a1545; color: white; }
+
+.team-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 16px 40px;
+  border: none; border-radius: 16px;
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.3em; cursor: pointer;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.btn::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2));
+  opacity: 0; transition: 0.3s;
+}
+.btn:hover::after { opacity: 1; }
+.btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+.btn:active { transform: translateY(0); }
+
+.btn-start {
+  background: linear-gradient(135deg, var(--accent2), #06b6d4);
+  color: #0f172a; width: 100%; margin-top: 25px;
+}
+.btn-answer {
+  background: linear-gradient(135deg, var(--accent3), #f59e0b);
+  color: #1a1545;
+}
+.btn-next {
+  background: linear-gradient(135deg, var(--accent4), #7c3aed);
+  color: white;
+}
+.btn-restart {
+  background: linear-gradient(135deg, var(--accent1), #dc2626);
+  color: white;
+}
+
+/* ===== GAME SCREEN ===== */
+.game-area {
+  width: 100%; max-width: 800px;
+  animation: slideUp 0.5s ease;
+}
+
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+}
+
+.score-board {
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.team-score {
+  padding: 10px 20px; border-radius: 14px;
+  font-family: 'Baloo 2', cursive; font-size: 1.1em;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.06);
+  transition: all 0.3s;
+}
+.team-score.active {
+  border-color: var(--accent3);
+  background: rgba(255,230,109,0.15);
+  box-shadow: 0 0 20px rgba(255,230,109,0.2);
+}
+
+.round-info {
+  font-size: 1em; color: #a0a0cc;
+  padding: 10px 20px; border-radius: 14px;
+  background: rgba(255,255,255,0.06);
+}
+
+/* Timer */
+.timer-ring {
+  width: 140px; height: 140px; margin: 0 auto 20px;
+  position: relative;
+}
+.timer-ring svg { transform: rotate(-90deg); }
+.timer-ring circle {
+  fill: none; stroke-width: 8;
+  cx: 70; cy: 70; r: 62;
+}
+.timer-bg { stroke: rgba(255,255,255,0.1); }
+.timer-progress {
+  stroke: var(--accent2);
+  stroke-dasharray: 389.56;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s;
+}
+.timer-progress.warning { stroke: var(--accent3); }
+.timer-progress.danger { stroke: var(--accent1); }
+.timer-text {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Baloo 2', cursive;
+  font-size: 2.8em; font-weight: 800;
+}
+
+/* Question */
+.question-card {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 28px; padding: 40px;
+  text-align: center;
+  margin-bottom: 20px;
+  transition: all 0.5s;
+}
+.question-card.correct-flash {
+  border-color: var(--correct);
+  box-shadow: 0 0 40px rgba(34,197,94,0.4);
+}
+.question-card.wrong-flash {
+  border-color: var(--wrong);
+  box-shadow: 0 0 40px rgba(239,68,68,0.4);
+  animation: shake 0.5s;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.question-expression {
+  font-family: 'Baloo 2', cursive;
+  font-size: 3.5em; font-weight: 800;
+  margin: 10px 0 25px;
+  color: white;
+  letter-spacing: 4px;
+}
+
+.answer-area {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; flex-wrap: wrap;
+}
+.answer-input {
+  width: 200px; padding: 16px 24px;
+  font-size: 1.8em; font-family: 'Baloo 2', cursive;
+  text-align: center; border-radius: 16px;
+  border: 3px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: white; outline: none;
+  transition: 0.3s;
+}
+.answer-input:focus {
+  border-color: var(--accent3);
+  box-shadow: 0 0 25px rgba(255,230,109,0.3);
+}
+.answer-input.correct { border-color: var(--correct); background: rgba(34,197,94,0.15); }
+.answer-input.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.15); }
+
+.feedback {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.6em; margin-top: 20px;
+  min-height: 50px;
+  animation: popIn 0.3s ease;
+}
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.feedback.correct { color: var(--correct); }
+.feedback.wrong { color: var(--wrong); }
+
+.controls {
+  display: flex; justify-content: center; gap: 15px;
+  margin-top: 15px; flex-wrap: wrap;
+}
+
+/* ===== RESULT SCREEN ===== */
+.result-card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 28px; padding: 40px;
+  text-align: center; width: 100%; max-width: 650px;
+  animation: slideUp 0.6s ease;
+}
+.trophy { font-size: 5em; margin-bottom: 10px; animation: bounce 1s infinite; }
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+.result-title {
+  font-family: 'Baloo 2', cursive; font-size: 2em;
+  color: var(--accent3); margin-bottom: 20px;
+}
+.result-table {
+  width: 100%; border-collapse: separate; border-spacing: 0 8px;
+  margin: 20px 0;
+}
+.result-table th {
+  padding: 12px; text-align: left; color: var(--accent2);
+  font-size: 0.95em; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.result-table td {
+  padding: 12px; font-size: 1.1em;
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+}
+.result-table tr:first-child td {
+  background: rgba(255,230,109,0.12);
+  font-weight: 700;
+}
+.winner-name {
+  font-family: 'Baloo 2', cursive; font-size: 1.8em;
+  color: var(--accent3); margin: 10px 0;
+}
+
+.hidden { display: none !important; }
+
+/* Confetti */
+.confetti-piece {
+  position: fixed; width: 10px; height: 20px;
+  top: -20px; z-index: 100;
+  animation: confettiFall var(--fall-duration) linear forwards;
+}
+@keyframes confettiFall {
+  to { top: 110vh; transform: rotate(var(--rotation)); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  h1 { font-size: 2em; }
+  .question-expression { font-size: 2.2em; }
+  .answer-input { width: 150px; font-size: 1.4em; }
+  .timer-ring { width: 100px; height: 100px; }
+  .timer-text { font-size: 2em; }
+}
+
+/* GV instruction banner */
+.gv-banner {
+  background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(78,205,196,0.2));
+  border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 16px; padding: 16px 24px;
+  margin-bottom: 20px; font-size: 0.95em;
+  color: #c4b5fd; text-align: center;
+}
+.gv-banner strong { color: var(--accent3); }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container">
+  <!-- ===== SETUP SCREEN ===== -->
+  <div id="setupScreen">
+    <h1>⚡ Ai Nhanh Hơn</h1>
+    <p class="subtitle">Trò chơi tính nhẩm – Toán lớp 5</p>
+
+    <div class="gv-banner">
+      <strong>📺 Hướng dẫn GV:</strong> Chiếu lên TV/máy chiếu → HS viết đáp án lên bảng con → Hết giờ giơ bảng → GV bấm kiểm tra
+    </div>
+
+    <div class="setup-card">
+      <label>📐 Chọn dạng phép tính:</label>
+      <select id="mathType">
+        <option value="add_sub">Cộng trừ số thập phân</option>
+        <option value="mul">Nhân số thập phân</option>
+        <option value="div">Chia số thập phân</option>
+        <option value="mix">Hỗn hợp (+, −, ×, ÷)</option>
+        <option value="percent">Tỉ số phần trăm</option>
+        <option value="fraction">Phân số</option>
+      </select>
+
+      <label>⏱️ Thời gian mỗi câu (giây):</label>
+      <select id="timePerQ">
+        <option value="10">10 giây – Thử thách</option>
+        <option value="15" selected>15 giây – Vừa phải</option>
+        <option value="20">20 giây – Thoải mái</option>
+        <option value="30">30 giây – Dễ dàng</option>
+      </select>
+
+      <label>📝 Số câu hỏi:</label>
+      <select id="totalQ">
+        <option value="10">10 câu</option>
+        <option value="15" selected>15 câu</option>
+        <option value="20">20 câu</option>
+      </select>
+
+      <label>👥 Số đội chơi:</label>
+      <select id="teamCount" onchange="updateTeamInputs()">
+        <option value="0">Không chia đội (cá nhân)</option>
+        <option value="2">2 đội</option>
+        <option value="3">3 đội</option>
+        <option value="4" selected>4 đội (4 tổ)</option>
+      </select>
+
+      <div id="teamNames" class="team-inputs" style="margin-top:12px;">
+        <input type="text" placeholder="Tên Tổ 1" value="Tổ 1" class="team-name">
+        <input type="text" placeholder="Tên Tổ 2" value="Tổ 2" class="team-name">
+        <input type="text" placeholder="Tên Tổ 3" value="Tổ 3" class="team-name">
+        <input type="text" placeholder="Tên Tổ 4" value="Tổ 4" class="team-name">
+      </div>
+
+      <button class="btn btn-start" onclick="startGame()">🚀 BẮT ĐẦU CHƠI</button>
+    </div>
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div id="gameScreen" class="game-area hidden">
+    <div class="top-bar">
+      <div class="score-board" id="scoreBoard"></div>
+      <div class="round-info" id="roundInfo">Câu 1/15</div>
+    </div>
+
+    <div class="timer-ring">
+      <svg width="140" height="140">
+        <circle class="timer-bg" cx="70" cy="70" r="62"/>
+        <circle class="timer-progress" id="timerCircle" cx="70" cy="70" r="62"/>
+      </svg>
+      <div class="timer-text" id="timerText">15</div>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <div style="color: var(--accent2); font-size:1em; margin-bottom:5px;" id="qLabel">Tính nhẩm:</div>
+      <div class="question-expression" id="expression">3,5 + 2,7 = ?</div>
+      <div class="answer-area">
+        <input type="text" class="answer-input" id="answerInput" placeholder="?" autocomplete="off">
+        <button class="btn btn-answer" id="btnCheck" onclick="checkAnswer()">✓ Kiểm tra</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-next" onclick="nextQuestion()">Câu tiếp ➜</button>
+    </div>
+  </div>
+
+  <!-- ===== RESULT SCREEN ===== -->
+  <div id="resultScreen" class="hidden">
+    <div class="result-card">
+      <div class="trophy">🏆</div>
+      <div class="result-title">KẾT QUẢ CUỐI CÙNG</div>
+      <div class="winner-name" id="winnerName"></div>
+      <table class="result-table" id="resultTable"></table>
+      <div class="controls">
+        <button class="btn btn-restart" onclick="resetGame()">🔄 Chơi lại</button>
+        <button class="btn btn-start" onclick="location.reload()">⚙️ Cài đặt mới</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== GAME STATE ==========
+let config = {};
+let state = {};
+
+function updateTeamInputs() {
+  const n = parseInt(document.getElementById('teamCount').value);
+  const cont = document.getElementById('teamNames');
+  cont.innerHTML = '';
+  for (let i = 1; i <= n; i++) {
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.placeholder = `Tên Tổ ${i}`;
+    inp.value = `Tổ ${i}`; inp.className = 'team-name';
+    cont.appendChild(inp);
+  }
+}
+
+// ========== QUESTION GENERATORS ==========
+function rnd(min, max, dec = 1) {
+  const factor = Math.pow(10, dec);
+  return Math.round((Math.random() * (max - min) + min) * factor) / factor;
+}
+
+function genAddSub() {
+  const op = Math.random() > 0.5 ? '+' : '−';
+  let a, b, ans;
+  if (op === '+') {
+    a = rnd(1, 50); b = rnd(1, 50);
+    ans = Math.round((a + b) * 10) / 10;
+  } else {
+    a = rnd(10, 80); b = rnd(1, a - 0.1);
+    b = Math.round(b * 10) / 10;
+    ans = Math.round((a - b) * 10) / 10;
+  }
+  return { expr: `${fmt(a)} ${op} ${fmt(b)} = ?`, answer: ans, label: 'Tính nhẩm:' };
+}
+
+function genMul() {
+  const a = rnd(1, 20); const b = Math.floor(Math.random() * 9) + 2;
+  const ans = Math.round(a * b * 10) / 10;
+  return { expr: `${fmt(a)} × ${b} = ?`, answer: ans, label: 'Tính nhẩm:' };
+}
+
+function genDiv() {
+  const b = Math.floor(Math.random() * 8) + 2;
+  const ans = rnd(1, 30);
+  const a = Math.round(ans * b * 10) / 10;
+  return { expr: `${fmt(a)} ÷ ${b} = ?`, answer: ans, label: 'Tính nhẩm:' };
+}
+
+function genPercent() {
+  const percents = [10, 15, 20, 25, 30, 40, 50, 75];
+  const p = percents[Math.floor(Math.random() * percents.length)];
+  const base = [40, 60, 80, 100, 120, 150, 200, 250, 300, 400, 500][Math.floor(Math.random() * 11)];
+  const ans = Math.round(base * p / 100 * 10) / 10;
+  return { expr: `${p}% của ${base} = ?`, answer: ans, label: 'Tìm giá trị phần trăm:' };
+}
+
+function genFraction() {
+  const types = ['add', 'sub', 'compare'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  if (type === 'compare') {
+    const d = [4, 5, 6, 8, 10][Math.floor(Math.random() * 5)];
+    const n1 = Math.floor(Math.random() * (d - 1)) + 1;
+    const n2 = Math.floor(Math.random() * (d - 1)) + 1;
+    const v1 = n1 / d, v2 = n2 / d;
+    const ans = v1 > v2 ? '>' : v1 < v2 ? '<' : '=';
+    return { expr: `${n1}/${d}  ▢  ${n2}/${d}`, answer: ans, label: 'Điền >, <, = :' };
+  } else {
+    const d = [4, 5, 6, 8, 10][Math.floor(Math.random() * 5)];
+    let n1 = Math.floor(Math.random() * (d - 1)) + 1;
+    let n2 = Math.floor(Math.random() * (d - 1)) + 1;
+    if (type === 'sub' && n1 < n2) [n1, n2] = [n2, n1];
+    const op = type === 'add' ? '+' : '−';
+    const ansN = type === 'add' ? n1 + n2 : n1 - n2;
+    return { expr: `${n1}/${d} ${op} ${n2}/${d} = ?`, answer: `${ansN}/${d}`, label: 'Tính:' };
+  }
+}
+
+function generateQuestion() {
+  const t = config.mathType;
+  if (t === 'add_sub') return genAddSub();
+  if (t === 'mul') return genMul();
+  if (t === 'div') return genDiv();
+  if (t === 'percent') return genPercent();
+  if (t === 'fraction') return genFraction();
+  // mix
+  const gens = [genAddSub, genMul, genDiv, genPercent];
+  return gens[Math.floor(Math.random() * gens.length)]();
+}
+
+function fmt(n) { return String(n).replace('.', ','); }
+
+// ========== TIMER ==========
+const CIRCUMFERENCE = 2 * Math.PI * 62;
+
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timeLeft = config.timePerQ;
+  const circle = document.getElementById('timerCircle');
+  circle.style.strokeDasharray = CIRCUMFERENCE;
+  circle.style.strokeDashoffset = 0;
+  circle.classList.remove('warning', 'danger');
+  document.getElementById('timerText').textContent = state.timeLeft;
+
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    document.getElementById('timerText').textContent = state.timeLeft;
+    const pct = 1 - state.timeLeft / config.timePerQ;
+    circle.style.strokeDashoffset = CIRCUMFERENCE * pct;
+
+    if (state.timeLeft <= 5) circle.classList.add('danger');
+    else if (state.timeLeft <= config.timePerQ * 0.4) circle.classList.add('warning');
+
+    if (state.timeLeft <= 0) {
+      clearInterval(state.timerInterval);
+      timeUp();
+    }
+  }, 1000);
+}
+
+function timeUp() {
+  state.answered = true;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback wrong';
+  fb.innerHTML = `⏰ Hết giờ! Đáp án: <strong>${typeof state.currentQ.answer === 'number' ? fmt(state.currentQ.answer) : state.currentQ.answer}</strong>`;
+  document.getElementById('answerInput').classList.add('wrong');
+  document.getElementById('questionCard').classList.add('wrong-flash');
+  setTimeout(() => document.getElementById('questionCard').classList.remove('wrong-flash'), 600);
+}
+
+// ========== GAME LOGIC ==========
+function startGame() {
+  config.mathType = document.getElementById('mathType').value;
+  config.timePerQ = parseInt(document.getElementById('timePerQ').value);
+  config.totalQ = parseInt(document.getElementById('totalQ').value);
+  config.teamCount = parseInt(document.getElementById('teamCount').value);
+  config.teams = [];
+
+  const inputs = document.querySelectorAll('.team-name');
+  inputs.forEach(inp => config.teams.push(inp.value || `Tổ ${config.teams.length + 1}`));
+
+  state = {
+    currentQ: null,
+    questionNum: 0,
+    scores: new Array(Math.max(config.teamCount, 1)).fill(0),
+    correct: new Array(Math.max(config.teamCount, 1)).fill(0),
+    currentTeam: 0,
+    answered: false,
+    timerInterval: null,
+  };
+
+  document.getElementById('setupScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  renderScoreBoard();
+  showNextQuestion();
+}
+
+function renderScoreBoard() {
+  const sb = document.getElementById('scoreBoard');
+  sb.innerHTML = '';
+  if (config.teamCount === 0) {
+    sb.innerHTML = `<div class="team-score active">🌟 Điểm: <span id="soloScore">0</span></div>`;
+    return;
+  }
+  for (let i = 0; i < config.teamCount; i++) {
+    const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a855f7'];
+    const div = document.createElement('div');
+    div.className = 'team-score' + (i === state.currentTeam ? ' active' : '');
+    div.id = `team${i}`;
+    div.style.borderColor = colors[i % 4];
+    div.innerHTML = `${config.teams[i]}: <strong>${state.scores[i]}</strong>`;
+    sb.appendChild(div);
+  }
+}
+
+function showNextQuestion() {
+  state.questionNum++;
+  if (state.questionNum > config.totalQ) {
+    showResults();
+    return;
+  }
+
+  state.answered = false;
+  state.currentQ = generateQuestion();
+
+  document.getElementById('roundInfo').textContent = `Câu ${state.questionNum}/${config.totalQ}`;
+  document.getElementById('qLabel').textContent = state.currentQ.label;
+  document.getElementById('expression').textContent = state.currentQ.expr;
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('feedback').className = 'feedback';
+
+  const inp = document.getElementById('answerInput');
+  inp.value = ''; inp.className = 'answer-input'; inp.focus();
+
+  document.getElementById('questionCard').className = 'question-card';
+
+  if (config.teamCount > 0) {
+    state.currentTeam = (state.questionNum - 1) % config.teamCount;
+    renderScoreBoard();
+  }
+
+  startTimer();
+}
+
+function checkAnswer() {
+  if (state.answered) return;
+  state.answered = true;
+  clearInterval(state.timerInterval);
+
+  const userAns = document.getElementById('answerInput').value.trim().replace(',', '.');
+  const correctAns = state.currentQ.answer;
+  let isCorrect = false;
+
+  if (typeof correctAns === 'number') {
+    isCorrect = Math.abs(parseFloat(userAns) - correctAns) < 0.01;
+  } else {
+    isCorrect = userAns.replace(/\s/g, '') === String(correctAns).replace(/\s/g, '');
+  }
+
+  const fb = document.getElementById('feedback');
+  const inp = document.getElementById('answerInput');
+  const card = document.getElementById('questionCard');
+
+  if (isCorrect) {
+    fb.className = 'feedback correct';
+    fb.innerHTML = '🎉 Chính xác! +10 điểm';
+    inp.classList.add('correct');
+    card.classList.add('correct-flash');
+    if (config.teamCount > 0) {
+      state.scores[state.currentTeam] += 10;
+      state.correct[state.currentTeam]++;
+    } else {
+      state.scores[0] += 10;
+      state.correct[0]++;
+    }
+    renderScoreBoard();
+  } else {
+    fb.className = 'feedback wrong';
+    const dispAns = typeof correctAns === 'number' ? fmt(correctAns) : correctAns;
+    fb.innerHTML = `❌ Sai rồi! Đáp án đúng: <strong>${dispAns}</strong>`;
+    inp.classList.add('wrong');
+    card.classList.add('wrong-flash');
+  }
+  setTimeout(() => card.className = 'question-card', 700);
+}
+
+function nextQuestion() {
+  showNextQuestion();
+}
+
+// ========== RESULTS ==========
+function showResults() {
+  clearInterval(state.timerInterval);
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+
+  const table = document.getElementById('resultTable');
+  let html = '<thead><tr><th>Hạng</th><th>Đội</th><th>Điểm</th><th>Số câu đúng</th></tr></thead><tbody>';
+
+  if (config.teamCount === 0) {
+    html += `<tr><td>🥇</td><td>Bạn</td><td>${state.scores[0]}</td><td>${state.correct[0]}/${config.totalQ}</td></tr>`;
+    const pct = Math.round(state.correct[0] / config.totalQ * 100);
+    document.getElementById('winnerName').textContent =
+      pct >= 80 ? '⭐ Vua Tính Nhẩm! ⭐' : pct >= 50 ? '👍 Khá lắm!' : '💪 Cố gắng thêm nhé!';
+  } else {
+    const ranked = state.scores.map((s, i) => ({ name: config.teams[i], score: s, correct: state.correct[i] }));
+    ranked.sort((a, b) => b.score - a.score);
+    const medals = ['🥇', '🥈', '🥉', '4️⃣'];
+    ranked.forEach((t, i) => {
+      html += `<tr><td>${medals[i] || i + 1}</td><td>${t.name}</td><td>${t.score}</td><td>${t.correct}/${config.totalQ}</td></tr>`;
+    });
+    document.getElementById('winnerName').textContent = `🎊 ${ranked[0].name} chiến thắng! 🎊`;
+  }
+
+  html += '</tbody>';
+  table.innerHTML = html;
+  launchConfetti();
+}
+
+function resetGame() {
+  document.getElementById('resultScreen').classList.add('hidden');
+  state.questionNum = 0;
+  state.scores.fill(0);
+  state.correct.fill(0);
+  state.currentTeam = 0;
+  document.getElementById('gameScreen').classList.remove('hidden');
+  renderScoreBoard();
+  showNextQuestion();
+}
+
+// ========== CONFETTI ==========
+function launchConfetti() {
+  const colors = ['#ff6b6b', '#4ecdc4', '#ffe66d', '#a855f7', '#22c55e', '#f59e0b'];
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + 'vw';
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.setProperty('--fall-duration', (2 + Math.random() * 3) + 's');
+    piece.style.setProperty('--rotation', (Math.random() * 720 - 360) + 'deg');
+    piece.style.animationDelay = Math.random() * 2 + 's';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    piece.style.width = (6 + Math.random() * 8) + 'px';
+    piece.style.height = (8 + Math.random() * 14) + 'px';
+    document.body.appendChild(piece);
+    setTimeout(() => piece.remove(), 5000);
+  }
+}
+
+// ========== STARS BG ==========
+(function initStars() {
+  const cont = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 3 + 1;
+    s.style.width = size + 'px'; s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top = Math.random() * 100 + '%';
+    s.style.setProperty('--d', (1 + Math.random() * 3) + 's');
+    cont.appendChild(s);
+  }
+})();
+
+// Enter key to submit
+document.getElementById('answerInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAnswer();
+});
+</script>
+</body>
+</html>
